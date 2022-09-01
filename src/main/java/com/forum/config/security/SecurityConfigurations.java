@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigurations {
 
     private TokenService tokenService;
+
     private UsuarioRepository usuarioRepository;
 
     public SecurityConfigurations(TokenService tokenService, UsuarioRepository usuarioRepository) {
@@ -30,13 +31,13 @@ public class SecurityConfigurations {
     @Bean
     public SecurityFilterChain web(HttpSecurity http) throws Exception {
         http.authorizeRequests(auth -> auth.mvcMatchers(HttpMethod.GET, "/topicos**").permitAll()
-                        .mvcMatchers(HttpMethod.GET,"/h2-console").permitAll()
+                        .mvcMatchers(HttpMethod.GET, "/h2-console").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/auth**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                         .mvcMatchers(HttpMethod.DELETE, "/topicos/*").hasRole("MODERADOR")
                         .anyRequest().authenticated())
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().addFilterAt(new AutenticacaoViaTokerFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().addFilterAt(new AutenticacaoViaTokenFilter(tokenService, usuarioRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 
